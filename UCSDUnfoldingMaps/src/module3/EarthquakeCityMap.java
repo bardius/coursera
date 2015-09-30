@@ -1,10 +1,13 @@
 package module3;
 
 //Java utilities libraries
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 //import java.util.Collections;
 //import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 //Processing library
 import processing.core.PApplet;
@@ -76,27 +79,59 @@ public class EarthquakeCityMap extends PApplet {
 	    // These print statements show you (1) all of the relevant properties 
 	    // in the features, and (2) how to get one property and use it
 	    if (earthquakes.size() > 0) {
-	    	PointFeature f = earthquakes.get(0);
-	    	System.out.println(f.getProperties());
-	    	Object magObj = f.getProperty("magnitude");
-	    	float mag = Float.parseFloat(magObj.toString());
-	    	// PointFeatures also have a getLocation method
+
+			Map magLimits = calculateMagLimits(earthquakes);
+
+			for(int $i = 0; $i <earthquakes.size(); $i++){
+				PointFeature f = earthquakes.get($i);
+				//System.out.println(f.getProperties());
+
+				Object magObj = f.getProperty("magnitude");
+				float mag = Float.parseFloat(magObj.toString());
+
+				int colorLevel = (int) map(mag, Float.parseFloat(magLimits.get("minMag").toString()), Float.parseFloat(magLimits.get("maxMag").toString()), 0, 255);
+				markers.add(createMarker(f, colorLevel));
+			}
+
+			map.addMarkers(markers);
 	    }
-	    
-	    // Here is an example of how to use Processing's color method to generate 
-	    // an int that represents the color yellow.  
-	    int yellow = color(255, 255, 0);
-	    
-	    //TODO: Add code here as appropriate
+	}
+
+	private Map calculateMagLimits(List<PointFeature> earthquakes){
+		Map magLimits = new HashMap();
+		float minMag = 0;
+		float maxMag = 0;
+
+		for (int $i = 0; $i < earthquakes.size(); $i++) {
+			PointFeature f = earthquakes.get($i);
+			Object magObj = f.getProperty("magnitude");
+			float mag = Float.parseFloat(magObj.toString());
+
+			if (mag < minMag) {
+				minMag = mag;
+			}
+
+			if (mag > maxMag) {
+				maxMag = mag;
+			}
+		}
+
+		magLimits.put("minMag", minMag);
+		magLimits.put("maxMag", maxMag);
+
+		return magLimits;
 	}
 		
 	// A suggested helper method that takes in an earthquake feature and 
 	// returns a SimplePointMarker for that earthquake
 	// TODO: Implement this method and call it from setUp, if it helps
-	private SimplePointMarker createMarker(PointFeature feature)
+	private SimplePointMarker createMarker(PointFeature feature, int rgbColor)
 	{
 		// finish implementing and use this method, if it helps.
-		return new SimplePointMarker(feature.getLocation());
+		SimplePointMarker quakeMarker = new SimplePointMarker(feature.getLocation());
+		quakeMarker.setColor(color(255, 255-rgbColor, 0));
+
+		return quakeMarker;
 	}
 	
 	public void draw() {
@@ -111,6 +146,30 @@ public class EarthquakeCityMap extends PApplet {
 	private void addKey() 
 	{	
 		// Remember you can use Processing's graphics methods here
-	
+		fill(220, 220, 220);
+		rect(10, 50, 180, 500, 4);
+
+		String legendTitle = "--- Legend";
+		String lowMagTitle = "--- 0-3 Low Magnitude";
+		String midMagTitle = "--- 3-5 Mid Magnitude";
+		String hiMagTitle = "--- 5+ High Magnitude";
+
+		fill(0);
+		textSize(20);
+		text(legendTitle, 20, 80, 160, 40);
+
+		textSize(12);
+		fill(0);
+
+		text(lowMagTitle, 40, 124, 160, 24);
+		text(midMagTitle, 40, 158, 160, 24);
+		text(hiMagTitle, 40, 192, 160, 24);
+
+		fill(255, 255, 0);
+		ellipse(25, 132, 14, 14);
+		fill(255, 124, 0);
+		ellipse(25, 166, 14, 14);
+		fill(255, 0, 0);
+		ellipse(25, 200, 14, 14);
 	}
 }
