@@ -1,7 +1,10 @@
 package module4;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.data.Feature;
@@ -80,7 +83,7 @@ public class EarthquakeCityMap extends PApplet {
 		//earthquakesURL = "test2.atom";
 		
 		// WHEN TAKING THIS QUIZ: Uncomment the next line
-		//earthquakesURL = "quiz1.atom";
+		earthquakesURL = "quiz1.atom";
 		
 		
 		// (2) Reading in earthquake data and geometric properties
@@ -111,7 +114,7 @@ public class EarthquakeCityMap extends PApplet {
 	    }
 
 	    // could be used for debugging
-	    printQuakes();
+	    printQuakes(earthquakes);
 	 		
 	    // (3) Add markers to map
 	    //     NOTE: Country markers are not added to the map.  They are used
@@ -165,6 +168,12 @@ public class EarthquakeCityMap extends PApplet {
 		// IMPLEMENT THIS: loop over all countries to check if location is in any of them
 		
 		// TODO: Implement this method using the helper method isInCountry
+		for(Marker countryMarker : this.countryMarkers) {
+			if(isInCountry(earthquake, countryMarker)){
+				// inside a country
+				return true;
+			}
+		}
 		
 		// not inside any country
 		return false;
@@ -176,13 +185,42 @@ public class EarthquakeCityMap extends PApplet {
 	// the quakes to count how many occurred in that country.
 	// Recall that the country markers have a "name" property, 
 	// And LandQuakeMarkers have a "country" property set.
-	private void printQuakes() 
+	private void printQuakes(List<PointFeature> earthquakes)
 	{
 		// TODO: Implement this method
+		Map<String, Integer> countryQuakeReport = new HashMap<String, Integer>();
+		countryQuakeReport.put("Ocean", 0);
+
+		for (Marker country : countryMarkers) {
+			countryQuakeReport.put(country.getStringProperty("name"), 0);
+		}
+
+		for(PointFeature earthquake: earthquakes){
+			if(earthquake.getStringProperty("country") != null){
+                if(!countryQuakeReport.containsKey(earthquake.getStringProperty("country"))){
+                    countryQuakeReport.put(earthquake.getStringProperty("country"), 0);
+                }
+                else{
+                    countryQuakeReport.put(earthquake.getStringProperty("country"), countryQuakeReport.get(earthquake.getStringProperty("country")) + 1);
+                }
+			}
+            else {
+                countryQuakeReport.put("Ocean", countryQuakeReport.get("Ocean") + 1);
+            }
+		}
+
+        Map<String, Integer> sortedCountryQuakeReport = new TreeMap<String, Integer>(countryQuakeReport);
+
+        for (Map.Entry<String, Integer> sortedCountryQuakeReportItem : sortedCountryQuakeReport.entrySet()) {
+            if(sortedCountryQuakeReportItem.getValue() > 0){
+                System.out.print("\n");
+                System.out.print(sortedCountryQuakeReportItem.getKey() + ": " + sortedCountryQuakeReportItem.getValue());
+            }
+        }
 	}
-	
-	
-	
+
+
+
 	// helper method to test whether a given earthquake is in a given country
 	// This will also add the country property to the properties of the earthquake 
 	// feature if it's in one of the countries.

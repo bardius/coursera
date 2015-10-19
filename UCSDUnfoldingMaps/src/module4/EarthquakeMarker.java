@@ -16,6 +16,8 @@ public abstract class EarthquakeMarker extends SimplePointMarker
 	// Did the earthquake occur on land?  This will be set by the subclasses.
 	protected boolean isOnLand;
 
+	protected String country;
+
 	// The radius of the Earthquake marker
 	// You will want to set this in the constructor, either
 	// using the thresholds below, or a continuous function
@@ -105,6 +107,17 @@ public abstract class EarthquakeMarker extends SimplePointMarker
 	{
 		return isOnLand;
 	}
-	
+
+	public void setIsOnLand(boolean isOnLand) {
+		this.isOnLand = isOnLand;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getCountry() {
+		return country;
+	}
 	
 }
