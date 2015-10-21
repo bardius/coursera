@@ -1,5 +1,6 @@
 package module6;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -123,6 +124,8 @@ public class EarthquakeCityMap extends PApplet {
 	    //           for their geometric properties
 	    map.addMarkers(quakeMarkers);
 	    map.addMarkers(cityMarkers);
+
+		sortAndPrint(20);
 	    
 	    
 	}  // End setup
@@ -139,6 +142,15 @@ public class EarthquakeCityMap extends PApplet {
 	// TODO: Add the method:
 	//   private void sortAndPrint(int numToPrint)
 	// and then call that method from setUp
+	private void sortAndPrint(int numToPrint){
+		EarthquakeMarker[] sortedQuakeMarkers = quakeMarkers.toArray(new EarthquakeMarker[quakeMarkers.size()]);
+
+		Arrays.sort(sortedQuakeMarkers);
+
+		for(int printedIndex = 0; printedIndex < sortedQuakeMarkers.length - 1 && printedIndex < numToPrint; printedIndex++){
+			System.out.print(sortedQuakeMarkers[printedIndex].toString() + "\n");
+		}
+	}
 	
 	/** Event handler that gets called automatically when the 
 	 * mouse moves.

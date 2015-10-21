@@ -10,7 +10,7 @@ import processing.core.PGraphics;
  *
  */
 // TODO: Implement the comparable interface
-public abstract class EarthquakeMarker extends CommonMarker
+public abstract class EarthquakeMarker extends CommonMarker implements Comparable<EarthquakeMarker>
 {
 	
 	// Did the earthquake occur on land?  This will be set by the subclasses.
@@ -37,6 +37,18 @@ public abstract class EarthquakeMarker extends CommonMarker
 	public static final float THRESHOLD_DEEP = 300;
 
 	// ADD constants for colors
+
+	public int compareTo(EarthquakeMarker marker){
+		Integer compareResult = Float.compare(this.getMagnitude(), marker.getMagnitude());
+
+		if(compareResult > 0){
+			return -1;
+		} else if(compareResult < 0){
+			return 1;
+		}
+
+		return 0;
+	}
 
 	
 	// abstract method implemented in derived classes
